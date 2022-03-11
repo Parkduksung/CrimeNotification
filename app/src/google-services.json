@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "528967226734",
+    "project_id": "crimenotification-14dde",
+    "storage_bucket": "crimenotification-14dde.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:528967226734:android:e368dacb6678a1a9cc1d7f",
+        "android_client_info": {
+          "package_name": "com.example.crimenotification"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "528967226734-c5c5dacnv27r2otop97gvt1i67utl563.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAECFCqDaTo4pabfLjzhmg0UnkRlbku2yE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "528967226734-c5c5dacnv27r2otop97gvt1i67utl563.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
