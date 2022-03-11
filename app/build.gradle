@@ -4,6 +4,8 @@ plugins {
     id 'dagger.hilt.android.plugin'
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
 }
 
 android {
@@ -43,6 +45,7 @@ dependencies {
     ext {
         coroutines_Version = '1.5.2'
         glide_version = '4.10.0'
+        lottie_version = '4.1.0'
     }
 
     implementation 'androidx.core:core-ktx:1.7.0'
@@ -60,8 +63,11 @@ dependencies {
     implementation "com.github.bumptech.glide:glide:$glide_version"
     annotationProcessor "com.github.bumptech.glide:compiler:$glide_version"
 
-    //Use PieChart
-    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+    //Lottie
+    implementation "com.airbnb.android:lottie:$lottie_version"
+
+    //GPS
+    implementation 'com.google.android.gms:play-services-location:18.0.0'
 }
 
 // JetPack 관련
@@ -96,4 +102,15 @@ dependencies {
     //ktx
     implementation "androidx.fragment:fragment-ktx:$activity_version"
     implementation "androidx.activity:activity-ktx:$fragment_version"
+}
+
+
+//firebase
+dependencies {
+    implementation 'com.google.firebase:firebase-messaging:20.1.0'
+    implementation 'com.google.firebase:firebase-crashlytics-ktx:18.2.7'
+    implementation 'com.google.firebase:firebase-firestore:21.4.0'
+    implementation 'com.google.firebase:firebase-auth:19.2.0'
+    implementation platform('com.google.firebase:firebase-bom:29.0.4')
+    implementation 'com.google.firebase:firebase-analytics-ktx'
 }
