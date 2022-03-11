@@ -29,6 +29,11 @@
             android:name=".ui.home.HomeActivity"
             android:launchMode="singleTask"
             android:exported="false" />
+
+        <meta-data
+            android:name="com.kakao.sdk.AppKey"
+            android:value="398749c8e6b7108bf86a8de7c169fdf6" />
+
     </application>
 
 </manifest>
