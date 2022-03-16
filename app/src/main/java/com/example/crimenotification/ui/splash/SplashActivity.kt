@@ -7,13 +7,17 @@ import androidx.activity.viewModels
 import com.example.crimenotification.R
 import com.example.crimenotification.base.BaseActivity
 import com.example.crimenotification.databinding.ActivitySplashBinding
+import com.example.crimenotification.ext.showToast
 import com.example.crimenotification.ui.home.HomeActivity
 import dagger.hilt.android.AndroidEntryPoint
+import kotlin.system.exitProcess
 
 @AndroidEntryPoint
 class SplashActivity : BaseActivity<ActivitySplashBinding>(R.layout.activity_splash) {
 
     private val splashViewModel by viewModels<SplashViewModel>()
+
+    private var isRoute = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,7 +30,13 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(R.layout.activity_spl
             override fun onAnimationStart(animation: Animator) {}
 
             override fun onAnimationEnd(animation: Animator) {
-                splashViewModel.routeHome()
+                if (isRoute) {
+                    startActivity(Intent(this@SplashActivity, HomeActivity::class.java).apply {
+                        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    })
+                }else{
+                    binding.lottieView.playAnimation()
+                }
             }
 
             override fun onAnimationCancel(animation: Animator) {}
@@ -49,9 +59,12 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(R.layout.activity_spl
     private fun onChangedSplashViewState(viewState: SplashViewState) {
         when (viewState) {
             is SplashViewState.RouteHome -> {
-                startActivity(Intent(this@SplashActivity, HomeActivity::class.java).apply {
-                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                })
+                isRoute = true
+            }
+
+            is SplashViewState.Error -> {
+                showToast(message = viewState.message)
+                exitProcess(0)
             }
         }
     }
