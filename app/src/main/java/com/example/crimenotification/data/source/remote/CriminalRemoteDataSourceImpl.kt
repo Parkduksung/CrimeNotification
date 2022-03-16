@@ -1,6 +1,6 @@
 package com.example.crimenotification.data.source.remote
 
-import com.example.crimenotification.data.model.Criminal
+import com.example.crimenotification.network.response.CriminalResponse
 import com.example.crimenotification.network.api.SheetApi
 import com.example.crimenotification.util.Result
 import kotlinx.coroutines.Dispatchers
@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 class CriminalRemoteDataSourceImpl @Inject constructor(private val sheetApi: SheetApi) :
     CriminalRemoteDataSource {
-    override suspend fun getCriminals(): Result<List<Criminal>> = withContext(Dispatchers.IO) {
+    override suspend fun getCriminals(): Result<List<CriminalResponse>> = withContext(Dispatchers.IO) {
         try {
             val result = sheetApi.getSheetCriminals().execute().body()!!
             return@withContext Result.Success(result)
