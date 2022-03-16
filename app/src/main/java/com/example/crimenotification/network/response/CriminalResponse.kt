@@ -1,6 +1,6 @@
-package com.example.crimenotification.data.model
+package com.example.crimenotification.network.response
 
-data class Criminal(
+data class CriminalResponse(
     var name: String = "",
     var addressResident: String = "",
     var addressReal: String = ""

@@ -1,6 +1,6 @@
 package com.example.crimenotification.network.api
 
-import com.example.crimenotification.data.model.Criminal
+import com.example.crimenotification.network.response.CriminalResponse
 import retrofit2.Call
 import retrofit2.http.GET
 
@@ -12,6 +12,6 @@ interface SheetApi {
     }
 
     @GET(URL)
-    fun getSheetCriminals(): Call<List<Criminal>>
+    fun getSheetCriminals(): Call<List<CriminalResponse>>
 
 }
