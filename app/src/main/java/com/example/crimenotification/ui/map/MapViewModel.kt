@@ -3,6 +3,7 @@ package com.example.crimenotification.ui.map
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import com.example.crimenotification.base.BaseViewModel
+import com.example.crimenotification.data.repo.CriminalRepository
 import com.example.crimenotification.ext.ioScope
 import com.example.crimenotification.util.GpsTracker
 import com.example.crimenotification.util.Result
@@ -11,7 +12,10 @@ import net.daum.mf.map.api.MapPoint
 import javax.inject.Inject
 
 @HiltViewModel
-class MapViewModel @Inject constructor(app: Application) : BaseViewModel(app) {
+class MapViewModel @Inject constructor(
+    app: Application,
+    private val criminalRepository: CriminalRepository
+) : BaseViewModel(app) {
 
     val currentCenterMapPoint = MutableLiveData<MapPoint>()
 
@@ -44,11 +48,20 @@ class MapViewModel @Inject constructor(app: Application) : BaseViewModel(app) {
         }
     }
 
-
     fun search() {
         viewStateChanged(MapViewState.ShowProgress)
         ioScope {
+            when (val result = criminalRepository.getLocalCriminals()) {
+                is Result.Success -> {
+                    val toMapPOIItem = result.data.map { it.toCriminalItem().toMapPOIItem() }
+                    viewStateChanged(MapViewState.GetCriminalItems(toMapPOIItem.toTypedArray()))
+                }
 
+                is Result.Error -> {
+
+                }
+            }
+            viewStateChanged(MapViewState.HideProgress)
         }
     }
 
@@ -57,5 +70,4 @@ class MapViewModel @Inject constructor(app: Application) : BaseViewModel(app) {
 
         }
     }
-
 }
