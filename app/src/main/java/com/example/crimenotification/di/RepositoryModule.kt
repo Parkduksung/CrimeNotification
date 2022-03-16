@@ -5,6 +5,8 @@ import com.example.crimenotification.data.repo.CriminalRepository
 import com.example.crimenotification.data.repo.CriminalRepositoryImpl
 import com.example.crimenotification.data.repo.KakaoRepository
 import com.example.crimenotification.data.repo.KakaoRepositoryImpl
+import com.example.crimenotification.data.source.local.CriminalLocalDataSource
+import com.example.crimenotification.data.source.local.CriminalLocalDataSourceImpl
 import com.example.crimenotification.data.source.remote.CriminalRemoteDataSource
 import com.example.crimenotification.data.source.remote.CriminalRemoteDataSourceImpl
 import com.example.crimenotification.data.source.remote.KakaoRemoteDataSource
@@ -27,6 +29,9 @@ abstract class RepositoryModule {
     @Binds
     abstract fun bindCriminalRemoteDataSource(criminalRemoteDataSourceImpl: CriminalRemoteDataSourceImpl): CriminalRemoteDataSource
 
+    @Singleton
+    @Binds
+    abstract fun bindCriminalLocalDataSource(criminalLocalDataSourceImpl: CriminalLocalDataSourceImpl): CriminalLocalDataSource
 
     @Singleton
     @Binds
