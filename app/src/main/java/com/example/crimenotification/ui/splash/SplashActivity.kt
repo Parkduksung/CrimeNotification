@@ -3,12 +3,15 @@ package com.example.crimenotification.ui.splash
 import android.animation.Animator
 import android.content.Intent
 import android.os.Bundle
+import android.view.animation.AnimationUtils
 import androidx.activity.viewModels
+import androidx.core.view.isVisible
 import com.example.crimenotification.R
 import com.example.crimenotification.base.BaseActivity
 import com.example.crimenotification.databinding.ActivitySplashBinding
 import com.example.crimenotification.ext.showToast
 import com.example.crimenotification.ui.home.HomeActivity
+import com.example.crimenotification.ui.login.LoginActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlin.system.exitProcess
 
@@ -31,11 +34,20 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(R.layout.activity_spl
 
             override fun onAnimationEnd(animation: Animator) {
                 if (isRoute) {
-                    startActivity(Intent(this@SplashActivity, HomeActivity::class.java).apply {
+                    startActivity(Intent(this@SplashActivity, LoginActivity::class.java).apply {
                         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     })
-                }else{
-                    binding.lottieView.playAnimation()
+                } else {
+                    with(binding) {
+                        tvLoading.isVisible = true
+                        tvLoading.startAnimation(
+                            AnimationUtils.loadAnimation(
+                                applicationContext,
+                                R.anim.anim_brick
+                            )
+                        )
+                        lottieView.playAnimation()
+                    }
                 }
             }
 
