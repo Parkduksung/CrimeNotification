@@ -1,6 +1,8 @@
 package com.example.crimenotification.ui.map
 
 import android.Manifest
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
@@ -12,6 +14,7 @@ import com.example.crimenotification.base.ViewState
 import com.example.crimenotification.databinding.FragmentMapBinding
 import com.example.crimenotification.ext.hasPermission
 import com.example.crimenotification.ext.hidePOIInfoContainer
+import com.example.crimenotification.ext.showPOIInfoContainer
 import com.example.crimenotification.ext.showToast
 import com.example.crimenotification.ui.home.HomeViewModel
 import com.example.crimenotification.ui.home.HomeViewState
@@ -110,6 +113,8 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map) {
         mapview = MapView(requireActivity()).apply {
             setMapViewEventListener(this@MapFragment.mapViewEventListener)
             setPOIItemEventListener(this@MapFragment.poiItemEventListener)
+//            currentLocationTrackingMode =
+//                MapView.CurrentLocationTrackingMode.TrackingModeOnWithMarkerHeadingWithoutMapMoving
         }
         binding.containerMap.addView(mapview)
         mapViewModel.showCriminals()
@@ -135,7 +140,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map) {
         }
 
         currentLocation = MapPOIItem().apply {
-            itemName = ""
+            itemName = "Current Location"
             mapPoint = currentMapPoint
             markerType = MapPOIItem.MarkerType.RedPin
         }
@@ -177,13 +182,14 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map) {
                 showToast(message = viewState.errorMessage)
             }
 
-//            is MapViewState.GetSelectPOIItem -> {
-//                with(binding) {
-//                    containerPoiInfo.showPOIInfoContainer(requireContext())
-////                    itemName.text = viewState.item.name
-////                    itemLocation.text = viewState.item.address
-//                }
-//            }
+            is MapViewState.GetSelectPOIItem -> {
+                with(binding) {
+                    containerPoiInfo.showPOIInfoContainer(requireContext())
+                    itemName.text = viewState.item.name
+                    itemLocation.text = viewState.item.address
+                    distance.text = viewState.distance
+                }
+            }
 
             is MapViewState.ShowProgress -> {
                 binding.progressbar.bringToFront()
@@ -192,6 +198,20 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map) {
 
             is MapViewState.HideProgress -> {
                 binding.progressbar.isVisible = false
+            }
+
+            is MapViewState.CallPolice -> {
+                val intent = Intent(Intent.ACTION_DIAL).apply {
+                    data = Uri.parse("tel:112")
+                }
+                startActivity(intent)
+            }
+
+            is MapViewState.WithdrawUser -> {
+//                showToast(message = "회원탈퇴되어 앱이 종료됩니다.")
+//                Handler(Looper.getMainLooper()).postDelayed(
+//                    { exitProcess(0) }, 1000L
+//                )
             }
         }
     }
