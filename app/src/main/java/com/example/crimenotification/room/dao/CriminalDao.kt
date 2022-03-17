@@ -15,4 +15,6 @@ interface CriminalDao {
     @Query("SELECT * FROM criminal_table")
     fun getAll(): List<CriminalEntity>
 
+    @Query("SELECT * FROM criminal_table WHERE `name` = (:name) ")
+    fun getCriminalEntity(name: String): CriminalEntity
 }

@@ -8,4 +8,6 @@ interface CriminalLocalDataSource {
     suspend fun getLocalCriminals(): Result<List<CriminalEntity>>
 
     suspend fun registerCriminalEntity(entityList: List<CriminalEntity>): Boolean
+
+    suspend fun getCriminalEntity(name: String): Result<CriminalEntity>
 }
