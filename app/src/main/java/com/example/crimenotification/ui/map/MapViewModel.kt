@@ -48,7 +48,7 @@ class MapViewModel @Inject constructor(
         }
     }
 
-    fun search() {
+    fun showCriminals() {
         viewStateChanged(MapViewState.ShowProgress)
         ioScope {
             when (val result = criminalRepository.getLocalCriminals()) {

@@ -112,6 +112,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map) {
             setPOIItemEventListener(this@MapFragment.poiItemEventListener)
         }
         binding.containerMap.addView(mapview)
+        mapViewModel.showCriminals()
         mapViewModel.setCurrentLocation()
     }
 
@@ -134,8 +135,9 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map) {
         }
 
         currentLocation = MapPOIItem().apply {
-            itemName = "Current Location!"
+            itemName = ""
             mapPoint = currentMapPoint
+            markerType = MapPOIItem.MarkerType.RedPin
         }
 
         mapview?.apply {
