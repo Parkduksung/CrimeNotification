@@ -1,16 +1,10 @@
 package com.example.crimenotification.di
 
 
-import com.example.crimenotification.data.repo.CriminalRepository
-import com.example.crimenotification.data.repo.CriminalRepositoryImpl
-import com.example.crimenotification.data.repo.KakaoRepository
-import com.example.crimenotification.data.repo.KakaoRepositoryImpl
+import com.example.crimenotification.data.repo.*
 import com.example.crimenotification.data.source.local.CriminalLocalDataSource
 import com.example.crimenotification.data.source.local.CriminalLocalDataSourceImpl
-import com.example.crimenotification.data.source.remote.CriminalRemoteDataSource
-import com.example.crimenotification.data.source.remote.CriminalRemoteDataSourceImpl
-import com.example.crimenotification.data.source.remote.KakaoRemoteDataSource
-import com.example.crimenotification.data.source.remote.KakaoRemoteDataSourceImpl
+import com.example.crimenotification.data.source.remote.*
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -40,6 +34,14 @@ abstract class RepositoryModule {
     @Singleton
     @Binds
     abstract fun bindCKakaoRemoteDataSource(kakaoRemoteDataSourceImpl: KakaoRemoteDataSourceImpl): KakaoRemoteDataSource
+
+    @Singleton
+    @Binds
+    abstract fun bindFirebaseRepository(firebaseRepositoryImpl: FirebaseRepositoryImpl): FirebaseRepository
+
+    @Singleton
+    @Binds
+    abstract fun bindFirebaseRemoteDataSource(firebaseRemoteDataSourceImpl: FirebaseRemoteDataSourceImpl): FirebaseRemoteDataSource
 
 }
 
