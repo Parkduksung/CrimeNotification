@@ -20,6 +20,8 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>(R.layout.activity_home) {
 
     private val homeViewModel by viewModels<HomeViewModel>()
 
+    private var backWait: Long = INIT_TIME
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -75,4 +77,18 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>(R.layout.activity_home) {
         }
     }
 
+    override fun onBackPressed() {
+        if (System.currentTimeMillis() - backWait >= LIMIT_TIME) {
+            backWait = System.currentTimeMillis()
+            showToast(message = "뒤로가기 버튼을 한번 더 누르면 종료됩니다.")
+        } else {
+            super.onBackPressed()
+        }
+    }
+
+    companion object {
+        private const val INIT_TIME = 0L
+        private const val LIMIT_TIME = 2000
+
+    }
 }
