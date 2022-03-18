@@ -113,8 +113,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map) {
         mapview = MapView(requireActivity()).apply {
             setMapViewEventListener(this@MapFragment.mapViewEventListener)
             setPOIItemEventListener(this@MapFragment.poiItemEventListener)
-//            currentLocationTrackingMode =
-//                MapView.CurrentLocationTrackingMode.TrackingModeOnWithMarkerHeadingWithoutMapMoving
         }
         binding.containerMap.addView(mapview)
         mapViewModel.showCriminals()
@@ -134,7 +132,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map) {
     }
 
 
-    private fun setCurrentLocation(currentMapPoint: MapPoint) {
+    private fun setCurrentLocation(currentMapPoint: MapPoint, isMoveCurrentPosition: Boolean) {
         if (::currentLocation.isInitialized) {
             mapview?.removePOIItem(currentLocation)
         }
@@ -143,11 +141,14 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map) {
             itemName = "Current Location"
             mapPoint = currentMapPoint
             markerType = MapPOIItem.MarkerType.RedPin
+            showAnimationType = MapPOIItem.ShowAnimationType.SpringFromGround
         }
 
         mapview?.apply {
             addPOIItem(currentLocation)
-            setMapCenterPoint(currentMapPoint, false)
+            if (isMoveCurrentPosition) {
+                setMapCenterPoint(currentMapPoint, false)
+            }
         }
     }
 
@@ -163,7 +164,10 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map) {
     private fun onChangedMapViewState(viewState: ViewState) {
         when (viewState) {
             is MapViewState.SetCurrentLocation -> {
-                setCurrentLocation(viewState.mapPoint)
+                setCurrentLocation(viewState.mapPoint, true)
+            }
+            is MapViewState.RenewCurrentLocation -> {
+                setCurrentLocation(viewState.mapPoint, false)
             }
 
             is MapViewState.GetCriminalItems -> {
@@ -205,6 +209,10 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map) {
                     data = Uri.parse("tel:112")
                 }
                 startActivity(intent)
+            }
+
+            is MapViewState.AroundCriminals -> {
+
             }
 
             is MapViewState.WithdrawUser -> {

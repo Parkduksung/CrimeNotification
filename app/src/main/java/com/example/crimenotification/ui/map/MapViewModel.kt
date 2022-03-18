@@ -12,6 +12,8 @@ import com.example.crimenotification.util.DistanceManager
 import com.example.crimenotification.util.GpsTracker
 import com.example.crimenotification.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import net.daum.mf.map.api.MapPoint
 import javax.inject.Inject
 
@@ -26,10 +28,17 @@ class MapViewModel @Inject constructor(
 
     val currentZoomLevel = MutableLiveData<Int>()
 
+    var settingRoundCriminal: Int = 5000
+
+    private lateinit var renewJob: Job
+
     private val gpsTracker = GpsTracker(app)
 
     fun setCurrentLocation() {
         ioScope {
+            if (::renewJob.isInitialized && renewJob.isActive) {
+                renewJob.cancel()
+            }
             viewStateChanged(MapViewState.ShowProgress)
             when (val result = gpsTracker.getLocation()) {
                 is Result.Success -> {
@@ -38,10 +47,12 @@ class MapViewModel @Inject constructor(
 
                         val resultMapPoint =
                             MapPoint.mapPointWithGeoCoord(location.latitude, location.longitude)
-
                         viewStateChanged(MapViewState.SetCurrentLocation(resultMapPoint))
                         viewStateChanged(MapViewState.HideProgress)
                         viewStateChanged(MapViewState.SetZoomLevel(4))
+                        ioScope {
+                            renewCurrentLocation()
+                        }
                     }
                 }
 
@@ -51,6 +62,53 @@ class MapViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    suspend fun renewCurrentLocation() {
+        renewJob = ioScope {
+            while (true) {
+                delay(1000L)
+                when (val result = gpsTracker.getLocation()) {
+                    is Result.Success -> {
+                        result.data.addOnCompleteListener { task ->
+                            val location = task.result
+                            val resultMapPoint =
+                                MapPoint.mapPointWithGeoCoord(location.latitude, location.longitude)
+
+                            ioScope {
+                                when (val criminalResult = criminalRepository.getLocalCriminals()) {
+                                    is Result.Success -> {
+                                        val toAroundList = criminalResult.data.filter {
+                                            DistanceManager.getDistance(
+                                                lat1 = location.latitude,
+                                                lon1 = location.longitude,
+                                                lat2 = it.latitude,
+                                                lon2 = it.longitude
+                                            ) <= settingRoundCriminal
+                                        }
+
+                                        viewStateChanged(MapViewState.AroundCriminals(toAroundList))
+                                        viewStateChanged(
+                                            MapViewState.RenewCurrentLocation(
+                                                resultMapPoint
+                                            )
+                                        )
+                                    }
+
+                                    is Result.Error -> {
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    is Result.Error -> {
+                        viewStateChanged(MapViewState.Error(result.exception.message.toString()))
+                    }
+                }
+            }
+        }
+        renewJob.join()
     }
 
     fun withdraw() {
