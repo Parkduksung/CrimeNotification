@@ -20,3 +20,9 @@ data class CriminalItem(
         }
     }
 }
+
+data class DistanceCriminal(
+    var name : String = "",
+    var address : String = "",
+    var distance : Int = 0
+)
