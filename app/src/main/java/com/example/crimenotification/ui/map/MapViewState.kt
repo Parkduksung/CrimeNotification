@@ -12,9 +12,10 @@ sealed class MapViewState : ViewState {
     data class GetCriminalItems(val items: Array<MapPOIItem>) : MapViewState()
     data class GetSelectPOIItem(val item: CriminalEntity, val distance: String) : MapViewState()
     data class Error(val errorMessage: String) : MapViewState()
-    data class AroundCriminals(val list : List<CriminalEntity>) : MapViewState()
+    data class AroundCriminals(val list: List<CriminalEntity>) : MapViewState()
     object ShowProgress : MapViewState()
     object WithdrawUser : MapViewState()
     object HideProgress : MapViewState()
     object CallPolice : MapViewState()
+    object RouteAroundCriminalList : MapViewState()
 }

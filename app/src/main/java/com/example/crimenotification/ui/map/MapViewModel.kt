@@ -64,7 +64,7 @@ class MapViewModel @Inject constructor(
         }
     }
 
-    suspend fun renewCurrentLocation() {
+    private suspend fun renewCurrentLocation() {
         renewJob = ioScope {
             while (true) {
                 delay(1000L)
@@ -109,6 +109,10 @@ class MapViewModel @Inject constructor(
             }
         }
         renewJob.join()
+    }
+
+    fun aroundCriminalList() {
+        viewStateChanged(MapViewState.RouteAroundCriminalList)
     }
 
     fun withdraw() {

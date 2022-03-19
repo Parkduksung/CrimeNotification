@@ -36,6 +36,21 @@
             app:layout_constraintVertical_bias=".0">
 
             <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/user"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@color/white"
+                android:onClick="@{()->viewModel.callPolice()}"
+                android:src="@drawable/ic_call"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="W,1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias=".0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/call_police"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
@@ -55,7 +70,7 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:background="@color/white"
-                android:onClick="@{()->viewModel.withdraw()}"
+                android:onClick="@{()->viewModel.aroundCriminalList()}"
                 android:src="@drawable/ic_search"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintDimensionRatio="W,1:1"

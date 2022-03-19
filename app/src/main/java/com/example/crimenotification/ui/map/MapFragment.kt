@@ -16,8 +16,11 @@ import com.example.crimenotification.ext.hasPermission
 import com.example.crimenotification.ext.hidePOIInfoContainer
 import com.example.crimenotification.ext.showPOIInfoContainer
 import com.example.crimenotification.ext.showToast
+import com.example.crimenotification.ui.criminallist.CriminalListActivity
+import com.example.crimenotification.ui.criminallist.CriminalListActivity.Companion.KEY_RANGE
 import com.example.crimenotification.ui.home.HomeViewModel
 import com.example.crimenotification.ui.home.HomeViewState
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.daum.mf.map.api.MapPOIItem
 import net.daum.mf.map.api.MapPoint
@@ -212,14 +215,28 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map) {
             }
 
             is MapViewState.AroundCriminals -> {
+                Snackbar.make(
+                    requireActivity().findViewById(android.R.id.content),
+                    """
+                        현재위치에서 5Km 반경에 범죄자가 ${viewState.list.size}명이 있습니다.
+                    """.trimIndent(),
+                    Snackbar.LENGTH_LONG
+                ).setAction("Action", null).show()
+            }
 
+            is MapViewState.RouteAroundCriminalList -> {
+
+                val intent = Intent(requireContext(), CriminalListActivity::class.java).apply {
+                    putExtra(KEY_RANGE, mapViewModel.settingRoundCriminal)
+                }
+
+                startActivity(
+                    intent
+                )
             }
 
             is MapViewState.WithdrawUser -> {
-//                showToast(message = "회원탈퇴되어 앱이 종료됩니다.")
-//                Handler(Looper.getMainLooper()).postDelayed(
-//                    { exitProcess(0) }, 1000L
-//                )
+
             }
         }
     }
