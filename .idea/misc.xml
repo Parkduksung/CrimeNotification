@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../Library/Android/sdk/platforms/android-31/data/res/layout/auto_complete_list.xml" value="0.1852355072463768" />
         <entry key="app/src/main/res/drawable/bg_action_lorange.xml" value="0.365" />
         <entry key="app/src/main/res/drawable/bg_box_stroke.xml" value="0.365" />
         <entry key="app/src/main/res/drawable/ic_call.xml" value="0.186" />
@@ -10,12 +11,14 @@
         <entry key="app/src/main/res/drawable/ic_location.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_person.xml" value="0.365" />
         <entry key="app/src/main/res/drawable/ic_search.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_criminal_list.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_home.xml" value="0.19610507246376813" />
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.5328125" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.19610507246376813" />
-        <entry key="app/src/main/res/layout/activity_register.xml" value="0.5328125" />
+        <entry key="app/src/main/res/layout/activity_register.xml" value="0.4504347826086956" />
         <entry key="app/src/main/res/layout/activity_splash.xml" value="0.19610507246376813" />
         <entry key="app/src/main/res/layout/fragment_map.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/item_criminal_list.xml" value="0.375" />
       </map>
     </option>
   </component>
