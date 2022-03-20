@@ -19,11 +19,18 @@ class RegisterViewModel @Inject constructor(
 ) : BaseViewModel(app) {
 
 
+    /**
+     * id, password, passwordOk 입력하는 값을 가져오는 변수들
+     */
     val inputEmailLiveData = MutableLiveData<String>()
     val inputPasswordLiveData = MutableLiveData<String>()
     val inputPasswordOkLiveData = MutableLiveData<String>()
 
 
+    /**
+     * 회원가입 로직.
+     * 로그인 방식을 참조하여 확인할 것.
+     */
     fun register() {
         ioScope {
             viewStateChanged(MapViewState.ShowProgress)

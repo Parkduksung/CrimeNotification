@@ -2,6 +2,9 @@ package com.example.crimenotification.ui.login
 
 import com.example.crimenotification.base.ViewState
 
+/**
+ * LoginActivity  에 화면상태 변화를 나타내는 클래스
+ */
 sealed class LoginViewState : ViewState {
     object RouteRegister : LoginViewState()
     object RouteHome : LoginViewState()

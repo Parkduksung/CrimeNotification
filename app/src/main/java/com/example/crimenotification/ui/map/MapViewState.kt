@@ -5,6 +5,9 @@ import com.example.crimenotification.room.entity.CriminalEntity
 import net.daum.mf.map.api.MapPOIItem
 import net.daum.mf.map.api.MapPoint
 
+/**
+ * MapFragment  에 화면상태 변화를 나타내는 클래스
+ */
 sealed class MapViewState : ViewState {
     data class SetZoomLevel(val zoomLevel: Int) : MapViewState()
     data class RenewCurrentLocation(val mapPoint: MapPoint) : MapViewState()

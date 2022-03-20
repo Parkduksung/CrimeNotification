@@ -25,6 +25,12 @@ class SplashViewModel @Inject constructor(
         checkSaveCriminal()
     }
 
+    /**
+     * 현재 저장되어있는 범죄자 데이터가 있는지 체크
+     * 있을경우, 앞의 변수 isRoute 를 true 로 바꾸게 해줌.
+     * 없을경우 loadCriminals() 호출
+     * 체크하는 로직이 실패할 경우 에러메세지 노출.
+     */
     private fun checkSaveCriminal() {
         ioScope {
             when (val result = criminalRepository.getLocalCriminals()) {
@@ -42,11 +48,28 @@ class SplashViewModel @Inject constructor(
         }
     }
 
+    /**
+     * 범죄자 데이터를 로딩
+     */
     private fun loadCriminals() {
         ioScope {
+
+            /**
+             * 엑셀파일 데이터를 읽어오는 로직 호출.
+             */
             when (val result = criminalRepository.getRemoteCriminals()) {
+
+                /**
+                 * 엑셀파일 데이터 가져오는 결과 성공
+                 */
                 is Result.Success -> {
+
+
                     getLocationList(result.data) {
+
+                        /**
+                         * 범죄자 리스트에 각 좌표값 리스트를 합쳐 하나의 리스트로 바꿈.
+                         */
                         val toZipList = result.data.zip(it).map { zip ->
                             CriminalEntity(
                                 name = zip.first.name,
@@ -57,6 +80,9 @@ class SplashViewModel @Inject constructor(
                         }
 
                         ioScope {
+                            /**
+                             * 하나로 합친 리스트를 저장이 잘 됬는지 체크여부.
+                             */
                             if (criminalRepository.registerCriminalEntity(toZipList)) {
                                 viewStateChanged(SplashViewState.RouteHome)
                             } else {
@@ -66,6 +92,10 @@ class SplashViewModel @Inject constructor(
                     }
                 }
 
+                /**
+                 * 엑셀파일 데이터 가져오는 결과 실패
+                 * 실패 에러메세지 호출.
+                 */
                 is Result.Error -> {
                     viewStateChanged(SplashViewState.Error("범죄자 데이터를 가지고 올 수 없습니다. 다시 시도해 주세요."))
                 }
@@ -75,6 +105,10 @@ class SplashViewModel @Inject constructor(
     }
 
 
+    /**
+     * 엑셀데이터의 주소의 좌표값을 가져와 리스트로 만드는 로직
+     * KakaoApi 를 통해 좌표값을 가져와 리스트업.
+     */
     private fun getLocationList(list: List<CriminalResponse>, callback: (List<Document>) -> Unit) {
         var count = 1
         val documentList = mutableListOf<Document>()

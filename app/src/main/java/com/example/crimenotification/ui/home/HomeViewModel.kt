@@ -8,6 +8,9 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(app: Application) : BaseViewModel(app){
 
+    /**
+     * 퍼미션 허용했을때 상태값이 PermissionGrant 변한다.
+     */
     fun permissionGrant() {
         viewStateChanged(HomeViewState.PermissionGrant)
     }

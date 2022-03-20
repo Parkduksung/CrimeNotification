@@ -2,7 +2,6 @@ package com.example.crimenotification.ui.criminallist
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.viewModels
 import androidx.core.view.isVisible
 import com.example.crimenotification.R
@@ -27,6 +26,7 @@ class CriminalListActivity :
         initViewModel()
     }
 
+
     @SuppressLint("SetTextI18n")
     private fun initUi() {
         with(binding) {
@@ -35,6 +35,9 @@ class CriminalListActivity :
         }
     }
 
+    /**
+     * 뷰모델 초기화
+     */
     private fun initViewModel() {
         criminalListViewModel.rangeObservableField.set(intent.getIntExtra(KEY_RANGE, 500))
         criminalListViewModel.getCriminalList()
@@ -43,6 +46,9 @@ class CriminalListActivity :
         }
     }
 
+    /**
+     * 상태에 따른 화면변화를 나타냄
+     */
     private fun onChangedCriminalListViewState(viewState: CriminalListViewState) {
         when (viewState) {
             is CriminalListViewState.Error -> {
@@ -61,12 +67,18 @@ class CriminalListActivity :
                 binding.progressbar.isVisible = false
             }
 
+            /**
+             * 범죄자 리스트를 갱신
+             */
             is CriminalListViewState.RenewCriminalList -> {
                 binding.criminalNum.isVisible = true
                 binding.criminalNum.text = "총 ${viewState.list.size} 명"
                 criminalAdapter.renewAll(viewState.list.sortedBy { it.distance })
             }
 
+            /**
+             * 범죄자 리스트가 0명인 경우.
+             */
             is CriminalListViewState.EmptyCriminalList -> {
                 binding.criminalNum.isVisible = true
                 binding.criminalNum.text = "총 0명"
