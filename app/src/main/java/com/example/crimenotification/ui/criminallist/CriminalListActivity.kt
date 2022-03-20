@@ -51,8 +51,10 @@ class CriminalListActivity :
 
             is CriminalListViewState.ShowProgress -> {
                 binding.progressbar.bringToFront()
+                binding.criminalNum.isVisible = false
                 binding.progressbar.isVisible = true
                 criminalAdapter.clear()
+
             }
 
             is CriminalListViewState.HideProgress -> {
@@ -60,8 +62,15 @@ class CriminalListActivity :
             }
 
             is CriminalListViewState.RenewCriminalList -> {
-                Log.d("결과", "여기 호출됨??")
+                binding.criminalNum.isVisible = true
+                binding.criminalNum.text = "총 ${viewState.list.size} 명"
                 criminalAdapter.renewAll(viewState.list.sortedBy { it.distance })
+            }
+
+            is CriminalListViewState.EmptyCriminalList -> {
+                binding.criminalNum.isVisible = true
+                binding.criminalNum.text = "총 0명"
+                criminalAdapter.clear()
             }
         }
     }

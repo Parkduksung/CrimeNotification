@@ -27,7 +27,7 @@ class CriminalListViewModel @Inject constructor(
         ioScope {
             while (true) {
                 viewStateChanged(CriminalListViewState.ShowProgress)
-                delay(1000L)
+                delay(DELAY_PROGRESS)
                 when (val result = gpsTracker.getLocation()) {
                     is Result.Success -> {
                         result.data.addOnCompleteListener { task ->
@@ -55,11 +55,15 @@ class CriminalListViewModel @Inject constructor(
                                                 )
                                             )
                                         }
-                                        viewStateChanged(
-                                            CriminalListViewState.RenewCriminalList(
-                                                toAroundList
+                                        if (toAroundList.isNotEmpty()) {
+                                            viewStateChanged(
+                                                CriminalListViewState.RenewCriminalList(
+                                                    toAroundList
+                                                )
                                             )
-                                        )
+                                        } else {
+                                            viewStateChanged(CriminalListViewState.EmptyCriminalList)
+                                        }
                                         viewStateChanged(CriminalListViewState.HideProgress)
                                     }
 
@@ -80,7 +84,8 @@ class CriminalListViewModel @Inject constructor(
         }
     }
 
-    companion object{
+    companion object {
+        private const val DELAY_PROGRESS = 1000L
         private const val RENEW_INTERVAL = 5000L
     }
 }
