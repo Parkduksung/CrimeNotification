@@ -1,15 +1,19 @@
 package com.example.crimenotification.ext
 
 import android.content.Context
+import android.view.Gravity
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.example.crimenotification.R
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 
 
@@ -57,4 +61,17 @@ fun ConstraintLayout.hidePOIInfoContainer(context: Context) {
             )
         )
     }
+}
+
+fun showSnackBar(attachLayout: CoordinatorLayout, message: String) {
+    attachLayout.bringToFront()
+    val snackbar = Snackbar.make(
+        attachLayout, message, Snackbar.LENGTH_SHORT
+    )
+    val layoutParams = CoordinatorLayout.LayoutParams(snackbar.view.layoutParams)
+    layoutParams.gravity = Gravity.TOP
+    layoutParams.topMargin = 10
+    snackbar.view.layoutParams = layoutParams
+    snackbar.animationMode = BaseTransientBottomBar.ANIMATION_MODE_FADE
+    snackbar.show()
 }

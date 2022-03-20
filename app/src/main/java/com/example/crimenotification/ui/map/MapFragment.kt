@@ -4,7 +4,11 @@ import android.Manifest
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.view.MenuItem
 import android.view.View
+import android.widget.PopupMenu
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -12,19 +16,17 @@ import com.example.crimenotification.R
 import com.example.crimenotification.base.BaseFragment
 import com.example.crimenotification.base.ViewState
 import com.example.crimenotification.databinding.FragmentMapBinding
-import com.example.crimenotification.ext.hasPermission
-import com.example.crimenotification.ext.hidePOIInfoContainer
-import com.example.crimenotification.ext.showPOIInfoContainer
-import com.example.crimenotification.ext.showToast
+import com.example.crimenotification.ext.*
 import com.example.crimenotification.ui.criminallist.CriminalListActivity
 import com.example.crimenotification.ui.criminallist.CriminalListActivity.Companion.KEY_RANGE
 import com.example.crimenotification.ui.home.HomeViewModel
 import com.example.crimenotification.ui.home.HomeViewState
-import com.google.android.material.snackbar.Snackbar
+import com.example.crimenotification.ui.login.LoginActivity
 import dagger.hilt.android.AndroidEntryPoint
 import net.daum.mf.map.api.MapPOIItem
 import net.daum.mf.map.api.MapPoint
 import net.daum.mf.map.api.MapView
+import kotlin.system.exitProcess
 
 @AndroidEntryPoint
 class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map) {
@@ -38,6 +40,24 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map) {
     private lateinit var currentLocation: MapPOIItem
 
     private var mapview: MapView? = null
+
+    private val userPopupMenu by lazy {
+        PopupMenu(requireContext(), binding.user).apply {
+            menuInflater.inflate(R.menu.menu_user, this.menu)
+            setOnMenuItemClickListener { menuItem: MenuItem ->
+                when (menuItem.itemId) {
+                    R.id.logout -> {
+                        mapViewModel.logout()
+                    }
+
+                    R.id.withdraw -> {
+                        mapViewModel.withdraw()
+                    }
+                }
+                return@setOnMenuItemClickListener true
+            }
+        }
+    }
 
     private val mapViewEventListener =
         object : MapView.MapViewEventListener {
@@ -83,7 +103,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map) {
 
         locationRequest()
         initViewModel()
-
     }
 
     private val poiItemEventListener = object : MapView.POIItemEventListener {
@@ -96,7 +115,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map) {
         }
 
         override fun onCalloutBalloonOfPOIItemTouched(p0: MapView?, p1: MapPOIItem?) {
-
         }
 
         override fun onCalloutBalloonOfPOIItemTouched(
@@ -104,15 +122,14 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map) {
             p1: MapPOIItem?,
             p2: MapPOIItem.CalloutBalloonButtonType?
         ) {
-
         }
 
         override fun onDraggablePOIItemMoved(p0: MapView?, p1: MapPOIItem?, p2: MapPoint?) {
-
         }
     }
 
     private fun initUi() {
+
         mapview = MapView(requireActivity()).apply {
             setMapViewEventListener(this@MapFragment.mapViewEventListener)
             setPOIItemEventListener(this@MapFragment.poiItemEventListener)
@@ -215,28 +232,33 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map) {
             }
 
             is MapViewState.AroundCriminals -> {
-                Snackbar.make(
-                    requireActivity().findViewById(android.R.id.content),
-                    """
+                showSnackBar(
+                    attachLayout = binding.containerSnackBar, message = """
                         현재위치에서 5Km 반경에 범죄자가 ${viewState.list.size}명이 있습니다.
-                    """.trimIndent(),
-                    Snackbar.LENGTH_LONG
-                ).setAction("Action", null).show()
-            }
-
-            is MapViewState.RouteAroundCriminalList -> {
-
-                val intent = Intent(requireContext(), CriminalListActivity::class.java).apply {
-                    putExtra(KEY_RANGE, mapViewModel.settingRoundCriminal)
-                }
-
-                startActivity(
-                    intent
+                    """.trimIndent()
                 )
             }
 
-            is MapViewState.WithdrawUser -> {
+            is MapViewState.RouteAroundCriminalList -> {
+                val intent = Intent(requireContext(), CriminalListActivity::class.java).apply {
+                    putExtra(KEY_RANGE, mapViewModel.settingRoundCriminal)
+                }
+                startActivity(intent)
+            }
 
+            is MapViewState.LogoutUser -> {
+                showToast(message = "로그아웃되었습니다.")
+                startActivity(Intent(requireContext(), LoginActivity::class.java))
+                requireActivity().finish()
+            }
+
+            is MapViewState.WithdrawUser -> {
+                showToast(message = "계정이 삭제되어 앱이 종료됩니다.")
+                Handler(Looper.getMainLooper()).postDelayed({ exitProcess(0) }, 2000L)
+            }
+
+            is MapViewState.ShowUserPopupMenu -> {
+                userPopupMenu.show()
             }
         }
     }

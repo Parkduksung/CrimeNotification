@@ -67,7 +67,7 @@ class MapViewModel @Inject constructor(
     private suspend fun renewCurrentLocation() {
         renewJob = ioScope {
             while (true) {
-                delay(1000L)
+                delay(RENEW_CURRENT_LOCATION_INTERVAL)
                 when (val result = gpsTracker.getLocation()) {
                     is Result.Success -> {
                         result.data.addOnCompleteListener { task ->
@@ -87,16 +87,22 @@ class MapViewModel @Inject constructor(
                                             ) <= settingRoundCriminal
                                         }
 
-                                        viewStateChanged(MapViewState.AroundCriminals(toAroundList))
-                                        viewStateChanged(
-                                            MapViewState.RenewCurrentLocation(
-                                                resultMapPoint
+                                        if (toAroundList.isNotEmpty()) {
+                                            viewStateChanged(
+                                                MapViewState.AroundCriminals(
+                                                    toAroundList
+                                                )
                                             )
-                                        )
+                                            viewStateChanged(
+                                                MapViewState.RenewCurrentLocation(
+                                                    resultMapPoint
+                                                )
+                                            )
+                                        }
                                     }
 
                                     is Result.Error -> {
-
+                                        viewStateChanged(MapViewState.Error("범죄자 데이터 호출에 실패하였습니다."))
                                     }
                                 }
                             }
@@ -121,7 +127,7 @@ class MapViewModel @Inject constructor(
                 if (it.isSuccessful) {
                     viewStateChanged(MapViewState.WithdrawUser)
                 } else {
-
+                    viewStateChanged(MapViewState.Error("회원탈퇴를 실패하였습니다."))
                 }
             }
         }
@@ -137,10 +143,20 @@ class MapViewModel @Inject constructor(
                 }
 
                 is Result.Error -> {
-
+                    viewStateChanged(MapViewState.Error("범죄자 데이터 호출에 실패하였습니다."))
                 }
             }
             viewStateChanged(MapViewState.HideProgress)
+        }
+    }
+
+    fun logout() {
+        ioScope {
+            if (firebaseRepository.logout()) {
+                viewStateChanged(MapViewState.LogoutUser)
+            } else {
+                viewStateChanged(MapViewState.Error("로그아웃이 실패하였습니다."))
+            }
         }
     }
 
@@ -188,5 +204,15 @@ class MapViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun showUserPopupMenu() {
+        viewStateChanged(MapViewState.ShowUserPopupMenu)
+    }
+
+    companion object {
+
+        private const val RENEW_CURRENT_LOCATION_INTERVAL = 2000L
+
     }
 }

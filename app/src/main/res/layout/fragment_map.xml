@@ -35,13 +35,13 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias=".0">
 
-            <androidx.appcompat.widget.AppCompatImageButton
+            <ImageView
                 android:id="@+id/user"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:background="@color/white"
-                android:onClick="@{()->viewModel.callPolice()}"
-                android:src="@drawable/ic_call"
+                android:layout_margin="10dp"
+                android:onClick="@{()->viewModel.showUserPopupMenu()}"
+                android:background="@drawable/ic_user"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintDimensionRatio="W,1:1"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -93,6 +93,15 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:id="@+id/container_snack_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/container_appbar"
+            app:layout_constraintVertical_bias=".0" />
 
         <LinearLayout
             android:id="@+id/container_map"
