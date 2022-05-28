@@ -33,3 +33,4 @@ buildscript {
 }
 rootProject.name = "CrimeNotification"
 include ':app'
+include ':version_java'
