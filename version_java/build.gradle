@@ -4,7 +4,6 @@ plugins {
     id 'dagger.hilt.android.plugin'
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
-    id 'com.google.gms.google-services'
     id 'com.google.firebase.crashlytics'
 }
 
@@ -65,9 +64,6 @@ dependencies {
 
     //Lottie
     implementation "com.airbnb.android:lottie:$lottie_version"
-
-    //GPS
-    implementation 'com.google.android.gms:play-services-location:18.0.0'
 
     //Retrofit
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
