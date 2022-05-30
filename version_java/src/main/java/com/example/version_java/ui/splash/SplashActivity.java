@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.AnimationUtils;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
@@ -21,11 +22,34 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public final class SplashActivity extends BaseActivity {
 
-    private boolean isRoute;
+    private boolean isRoute = false;
+
+    private SplashViewModel splashViewModel;
 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initUi();
+        initViewModel();
+    }
+
+    private void initViewModel() {
+        splashViewModel = new ViewModelProvider(this).get(SplashViewModel.class);
+        splashViewModel.checkSaveCriminals();
+
+        splashViewModel.getViewStateLiveData().observe(SplashActivity.this, viewState -> {
+            if (viewState instanceof SplashViewState) {
+                onChangedViewState((SplashViewState) viewState);
+            }
+        });
+    }
+
+    private void onChangedViewState(SplashViewState viewState) {
+
+        if (viewState instanceof SplashViewState.RouteHome) {
+            isRoute = true;
+        } else if (viewState instanceof SplashViewState.Error) {
+            Toast.makeText(this, ((SplashViewState.Error) viewState).getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
 

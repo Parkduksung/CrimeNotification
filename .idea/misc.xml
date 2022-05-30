@@ -22,10 +22,17 @@
         <entry key="app/src/main/res/layout/fragment_map.xml" value="0.25" />
         <entry key="app/src/main/res/layout/item_criminal_list.xml" value="0.375" />
         <entry key="app/src/main/res/menu/menu_login.xml" value="0.32916666666666666" />
+        <entry key="version_java/src/main/res/layout/activity_login.xml" value="0.24818840579710144" />
         <entry key="version_java/src/main/res/layout/activity_main.xml" value="0.27898550724637683" />
+        <entry key="version_java/src/main/res/layout/activity_register.xml" value="0.24818840579710144" />
         <entry key="version_java/src/main/res/layout/activity_splash.xml" value="0.16236068895643363" />
       </map>
     </option>
+  </component>
+  <component name="EntryPointsManager">
+    <list size="1">
+      <item index="0" class="java.lang.String" itemvalue="javax.inject.Inject" />
+    </list>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />

@@ -13,4 +13,8 @@ interface CriminalRepository {
     suspend fun registerCriminalEntity(entityList: List<CriminalEntity>): Boolean
 
     suspend fun getCriminalEntity(name: String): Result<CriminalEntity>
+
+    fun  get(
+        onSUccess : (List<CriminalResponse>) -> Unit
+    )
 }
