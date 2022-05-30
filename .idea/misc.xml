@@ -22,9 +22,17 @@
         <entry key="app/src/main/res/layout/fragment_map.xml" value="0.25" />
         <entry key="app/src/main/res/layout/item_criminal_list.xml" value="0.375" />
         <entry key="app/src/main/res/menu/menu_login.xml" value="0.32916666666666666" />
+        <entry key="version_java/src/main/res/drawable/bg_action_lorange.xml" value="0.167" />
+        <entry key="version_java/src/main/res/drawable/bg_box_stroke.xml" value="0.167" />
+        <entry key="version_java/src/main/res/drawable/ic_call.xml" value="0.167" />
+        <entry key="version_java/src/main/res/drawable/ic_calling.xml" value="0.167" />
+        <entry key="version_java/src/main/res/drawable/ic_location.xml" value="0.167" />
+        <entry key="version_java/src/main/res/drawable/ic_search.xml" value="0.167" />
+        <entry key="version_java/src/main/res/drawable/ic_user.xml" value="0.167" />
+        <entry key="version_java/src/main/res/layout/activity_home.xml" value="0.24139492753623187" />
         <entry key="version_java/src/main/res/layout/activity_login.xml" value="0.24818840579710144" />
         <entry key="version_java/src/main/res/layout/activity_main.xml" value="0.27898550724637683" />
-        <entry key="version_java/src/main/res/layout/activity_register.xml" value="0.24818840579710144" />
+        <entry key="version_java/src/main/res/layout/activity_register.xml" value="0.1" />
         <entry key="version_java/src/main/res/layout/activity_splash.xml" value="0.16236068895643363" />
       </map>
     </option>

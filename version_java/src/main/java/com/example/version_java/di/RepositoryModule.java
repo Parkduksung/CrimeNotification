@@ -3,12 +3,16 @@ package com.example.version_java.di;
 
 import com.example.version_java.data.repo.CriminalRepository;
 import com.example.version_java.data.repo.CriminalRepositoryImpl;
+import com.example.version_java.data.repo.FirebaseRepository;
+import com.example.version_java.data.repo.FirebaseRepositoryImpl;
 import com.example.version_java.data.repo.KakaoRepository;
 import com.example.version_java.data.repo.KakaoRepositoryImpl;
 import com.example.version_java.data.source.local.CrimianlLocalDataSource;
 import com.example.version_java.data.source.local.CrimianlLocalDataSourceImpl;
 import com.example.version_java.data.source.remote.CriminalRemoteDataSource;
 import com.example.version_java.data.source.remote.CriminalRemoteDataSourceImpl;
+import com.example.version_java.data.source.remote.FirebaseRemoteDataSource;
+import com.example.version_java.data.source.remote.FirebaseRemoteDataSourceImpl;
 import com.example.version_java.data.source.remote.KakaoRemoteDataSource;
 import com.example.version_java.data.source.remote.KakaoRemoteDataSourceImpl;
 
@@ -52,5 +56,18 @@ public abstract class RepositoryModule {
     public abstract KakaoRemoteDataSource bindKakaoRemoteDataSource(
             KakaoRemoteDataSourceImpl kakaoRemoteDataSourceImpl
     );
+
+    @Singleton
+    @Binds
+    public abstract FirebaseRepository bindFirebaseRepository(
+            FirebaseRepositoryImpl firebaseRepositoryImpl
+    );
+
+    @Singleton
+    @Binds
+    public abstract FirebaseRemoteDataSource bindFirebaseRemoteDataSource(
+            FirebaseRemoteDataSourceImpl firebaseRemoteDataSourceImpl
+    );
+
 
 }
