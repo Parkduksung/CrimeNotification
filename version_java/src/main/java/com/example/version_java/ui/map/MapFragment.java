@@ -10,7 +10,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.ArraySet;
 import android.view.Gravity;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.PopupMenu;
@@ -20,14 +19,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.version_java.R;
 import com.example.version_java.base.BaseFragment;
 import com.example.version_java.databinding.FragmentMapBinding;
 import com.example.version_java.ui.criminallist.CriminalListActivity;
-import com.example.version_java.ui.criminallist.CriminalListViewModel;
 import com.example.version_java.ui.home.HomeViewModel;
 import com.example.version_java.ui.home.HomeViewState;
 import com.example.version_java.ui.login.LoginActivity;
@@ -37,9 +34,6 @@ import com.google.android.material.snackbar.Snackbar;
 import net.daum.mf.map.api.MapPOIItem;
 import net.daum.mf.map.api.MapPoint;
 import net.daum.mf.map.api.MapView;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -157,8 +151,8 @@ public class MapFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        locationRequest();
         initViewModel();
+        locationRequest();
     }
 
     private void initUi() {
@@ -189,7 +183,7 @@ public class MapFragment extends BaseFragment {
     }
 
     private void initViewModel() {
-        mapViewModel = new ViewModelProvider(this).get(MapViewModel.class);
+        mapViewModel = new ViewModelProvider(requireActivity()).get(MapViewModel.class);
         homeViewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
 
 
@@ -234,16 +228,18 @@ public class MapFragment extends BaseFragment {
             /**
              * 현재 위치를 갱신
              */
-            setCurrentLocation(((MapViewState.SetCurrentLocation) viewState).getMapPoint(), false);
+            setCurrentLocation(((MapViewState.RenewCurrentLocation) viewState).getMapPoint(), false);
         } else if (viewState instanceof MapViewState.GetCriminalItems) {
             /**
              * 범죄자 리스트들을 모두 보여줌.
              */
-            criminalItemList.addAll(Arrays.asList(((MapViewState.GetCriminalItems) viewState).getItems()));
+            criminalItemList.addAll(((MapViewState.GetCriminalItems) viewState).getItems());
 
             if (mapView != null) {
                 mapView.removeAllPOIItems();
-                mapView.addPOIItems(((MapViewState.GetCriminalItems) viewState).getItems());
+                criminalItemList.forEach(mapPOIItem -> {
+                    mapView.addPOIItem(mapPOIItem);
+                });
             }
         } else if (viewState instanceof MapViewState.SetZoomLevel) {
             /**
@@ -378,6 +374,12 @@ public class MapFragment extends BaseFragment {
         }
     }
 
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mapViewModel.finishRenewThread();
+    }
 
     public MapFragment() {
         super(R.layout.fragment_map);

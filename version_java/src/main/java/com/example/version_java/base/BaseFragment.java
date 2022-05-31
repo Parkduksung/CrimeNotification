@@ -38,6 +38,7 @@ public abstract class BaseFragment extends Fragment {
         setHasOptionsMenu(true);
         ViewDataBinding binding = DataBindingUtil.inflate(inflater, layoutId, container, false);
         binding.setLifecycleOwner(this);
+        this.binding = binding;
         return binding.getRoot();
     }
 }

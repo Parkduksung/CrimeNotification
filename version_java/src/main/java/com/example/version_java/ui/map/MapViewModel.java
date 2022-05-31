@@ -2,6 +2,7 @@ package com.example.version_java.ui.map;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
+import android.location.Location;
 
 import androidx.lifecycle.MutableLiveData;
 
@@ -10,6 +11,8 @@ import com.example.version_java.base.BaseViewModel;
 import com.example.version_java.data.repo.CriminalRepository;
 import com.example.version_java.data.repo.FirebaseRepository;
 import com.example.version_java.room.entity.CriminalEntity;
+import com.example.version_java.util.DistanceManager;
+import com.example.version_java.util.GpsTracker;
 
 import net.daum.mf.map.api.MapPOIItem;
 import net.daum.mf.map.api.MapPoint;
@@ -21,10 +24,15 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.lifecycle.HiltViewModel;
+
+@HiltViewModel
 public class MapViewModel extends BaseViewModel {
 
     private final FirebaseRepository firebaseRepository;
     private final CriminalRepository criminalRepository;
+
+    private final GpsTracker gpsTracker;
 
     MutableLiveData<MapPoint> currentCenterMapPoint = new MutableLiveData<>();
     MutableLiveData<Integer> currentZoomLevel = new MutableLiveData<>();
@@ -35,6 +43,7 @@ public class MapViewModel extends BaseViewModel {
 
     private Thread renewThread;
 
+    private Thread searchThread;
 
     /**
      * 현재 위치로 이동하는 로직.
@@ -42,6 +51,18 @@ public class MapViewModel extends BaseViewModel {
      */
     public void setCurrentLocation() {
 
+        finishRenewThread();
+
+        gpsTracker.getLocation(callback -> {
+            if (callback instanceof Location) {
+                Location location = (Location) callback;
+                MapPoint mapPoint = MapPoint.mapPointWithGeoCoord(location.getLatitude(), location.getLongitude());
+                viewStateChanged(new MapViewState.SetCurrentLocation(mapPoint));
+            } else if (callback instanceof String) {
+                viewStateChanged(new MapViewState.Error("현재 위치를 가져오는데 실패하였습니다."));
+            }
+            return null;
+        });
     }
 
     /**
@@ -57,6 +78,7 @@ public class MapViewModel extends BaseViewModel {
     public void withdraw() {
         firebaseRepository.delete(isDelete -> {
             if ((Boolean) isDelete) {
+                finishRenewThread();
                 viewStateChanged(MapViewState.WithdrawUser.INSTANCE);
             } else {
                 viewStateChanged(new MapViewState.Error("회원탈퇴를 실패하였습니다."));
@@ -75,20 +97,20 @@ public class MapViewModel extends BaseViewModel {
             criminalRepository.getLocalCriminals(
                     onSuccess -> {
                         List<CriminalEntity> entityList = (List<CriminalEntity>) onSuccess;
-
                         ArrayList<MapPOIItem> mapPOIItems = new ArrayList<>();
-
                         entityList.forEach(criminalEntity -> {
                             MapPOIItem mapPOIItem = new MapPOIItem();
                             mapPOIItem.setItemName(criminalEntity.getName());
-                            mapPOIItem.setMapPoint(MapPoint.mapPointWithGeoCoord(criminalEntity.getLatitude(), criminalEntity.getLongitude()));
+                            mapPOIItem.setMapPoint(MapPoint.mapPointWithGeoCoord(criminalEntity.getLongitude(), criminalEntity.getLatitude()));
                             mapPOIItem.setMarkerType(MapPOIItem.MarkerType.CustomImage);
                             mapPOIItem.setCustomImageResourceId(R.drawable.image);
                             mapPOIItems.add(mapPOIItem);
                         });
 
-                        viewStateChanged(new MapViewState.GetCriminalItems((MapPOIItem[]) mapPOIItems.toArray()));
+                        viewStateChanged(new MapViewState.GetCriminalItems(mapPOIItems));
                         viewStateChanged(MapViewState.HideProgress.INSTANCE);
+
+                        renewCurrentLocation();
                         return null;
                     },
                     onFailure -> {
@@ -106,6 +128,7 @@ public class MapViewModel extends BaseViewModel {
      */
     public void logout() {
         if (firebaseRepository.logout()) {
+            finishRenewThread();
             viewStateChanged(MapViewState.LogoutUser.INSTANCE);
         } else {
             viewStateChanged(new MapViewState.Error("로그아웃이 실패하였습니다."));
@@ -119,15 +142,60 @@ public class MapViewModel extends BaseViewModel {
         viewStateChanged(MapViewState.CallPolice.INSTANCE);
     }
 
+    /**
+     * 범죄자 아이콘을 선택하였을때의 로직.
+     * 범죄자 이름을 파라메터로 받음.
+     */
     public void getSelectPOIItemInfo(String itemName) {
         new Thread(() -> {
+            /**
+             * 파라메터로 입력받은 범죄자의 정보를 로컬 DB 에서 가져옴.
+             */
             criminalRepository.getCriminalEntity(itemName,
                     onSuccess -> {
                         CriminalEntity entity = (CriminalEntity) onSuccess;
 
+                        /**
+                         * 현재 위치를 가져옴.
+                         */
+                        gpsTracker.getLocation(callback -> {
+
+                            if (callback instanceof Location) {
+                                Location location = (Location) callback;
+
+                                /**
+                                 * 가져온 현재 위치와 로컬DB에서 검색한 범죄자의 거리를 계산하여
+                                 * 거리와 검색한 범죄자를 보여줌.
+                                 */
+                                int distance = DistanceManager.INSTANCE.getDistance(
+                                        location.getLatitude(),
+                                        location.getLongitude(),
+                                        entity.getLongitude(),
+                                        entity.getLatitude()
+                                );
+
+                                viewStateChanged(
+                                        new MapViewState.GetSelectPOIItem(
+                                                entity,
+                                                DistanceManager.INSTANCE.toStringDistance(distance)
+                                        )
+                                );
+                            } else if (callback instanceof String) {
+                                /**
+                                 * 현재 위치를 가져오지 못한 경우.
+                                 */
+                                viewStateChanged(new MapViewState.Error("현재 위치를 가져오는데 실패하였습니다."));
+                            }
+
+                            return null;
+                        });
+
                         return null;
                     },
                     onFailure -> {
+                        /**
+                         * 검색한 범죄자를 가져오지 못한 경우.
+                         */
                         String message = (String) onFailure;
                         viewStateChanged(new MapViewState.Error(message));
                         return null;
@@ -143,8 +211,76 @@ public class MapViewModel extends BaseViewModel {
     }
 
 
+    @SuppressLint("NewApi")
     private void renewCurrentLocation() {
+        renewThread = new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(RENEW_CURRENT_LOCATION_INTERVAL);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
+                gpsTracker.getLocation(callback -> {
+                    if (callback instanceof Location) {
+                        Location location = (Location) callback;
+                        MapPoint mapPoint = MapPoint.mapPointWithGeoCoord(location.getLatitude(), location.getLongitude());
+
+                        searchThread = new Thread(() -> {
+                            criminalRepository.getLocalCriminals(
+                                    onSuccess -> {
+                                        List<CriminalEntity> entityList = (List<CriminalEntity>) onSuccess;
+                                        List<CriminalEntity> toFilterEntity = new ArrayList<>();
+                                        entityList.forEach(criminalEntity -> {
+                                            int distance = DistanceManager.INSTANCE.getDistance(
+                                                    location.getLatitude(),
+                                                    location.getLongitude(),
+                                                    criminalEntity.getLongitude(),
+                                                    criminalEntity.getLatitude()
+                                            );
+
+                                            if (distance <= 5000) {
+                                                toFilterEntity.add(criminalEntity);
+                                            }
+                                        });
+                                        if (!toFilterEntity.isEmpty()) {
+                                            viewStateChanged(new MapViewState.AroundCriminals(toFilterEntity));
+                                        }
+
+                                        viewStateChanged(new MapViewState.RenewCurrentLocation(mapPoint));
+
+
+                                        viewStateChanged(MapViewState.HideProgress.INSTANCE);
+                                        return null;
+                                    },
+                                    onFailure -> {
+                                        viewStateChanged(new MapViewState.Error("범죄자 데이터 호출에 실패하였습니다."));
+                                        viewStateChanged(MapViewState.HideProgress.INSTANCE);
+                                        return null;
+                                    }
+                            );
+                        });
+                        searchThread.start();
+                    } else if (callback instanceof String) {
+                        viewStateChanged(new MapViewState.Error("현재 위치를 가져오는데 실패하였습니다."));
+                    }
+                    return null;
+                });
+
+            }
+        });
+
+        renewThread.start();
+    }
+
+    public void finishRenewThread() {
+        if (renewThread != null && renewThread.isAlive()) {
+            try {
+                renewThread.stop();
+                searchThread.stop();
+            } catch (Exception e) {
+            }
+        }
     }
 
 
@@ -157,5 +293,6 @@ public class MapViewModel extends BaseViewModel {
         super(application);
         this.criminalRepository = criminalRepository;
         this.firebaseRepository = firebaseRepository;
+        gpsTracker = new GpsTracker(application);
     }
 }

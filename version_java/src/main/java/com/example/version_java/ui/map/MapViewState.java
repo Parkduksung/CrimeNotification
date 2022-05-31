@@ -4,18 +4,18 @@ package com.example.version_java.ui.map;
 import com.example.version_java.base.ViewState;
 import com.example.version_java.room.entity.CriminalEntity;
 
-import java.util.Arrays;
-import java.util.List;
-
-import kotlin.Metadata;
-import kotlin.jvm.internal.DefaultConstructorMarker;
-import kotlin.jvm.internal.Intrinsics;
-
 import net.daum.mf.map.api.MapPOIItem;
 import net.daum.mf.map.api.MapPoint;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import kotlin.jvm.internal.DefaultConstructorMarker;
+import kotlin.jvm.internal.Intrinsics;
 
 public abstract class MapViewState implements ViewState {
     private MapViewState() {
@@ -204,31 +204,31 @@ public abstract class MapViewState implements ViewState {
 
     public static final class GetCriminalItems extends MapViewState {
         @NotNull
-        private final MapPOIItem[] items;
+        private final ArrayList<MapPOIItem> items;
 
         @NotNull
-        public final MapPOIItem[] getItems() {
+        public final ArrayList<MapPOIItem> getItems() {
             return this.items;
         }
 
-        public GetCriminalItems(@NotNull MapPOIItem[] items) {
+        public GetCriminalItems(@NotNull ArrayList<MapPOIItem> items) {
             Intrinsics.checkNotNullParameter(items, "items");
             this.items = items;
         }
 
         @NotNull
-        public final MapPOIItem[] component1() {
+        public final ArrayList<MapPOIItem> component1() {
             return this.items;
         }
 
         @NotNull
-        public final MapViewState.GetCriminalItems copy(@NotNull MapPOIItem[] items) {
+        public final MapViewState.GetCriminalItems copy(@NotNull ArrayList<MapPOIItem> items) {
             Intrinsics.checkNotNullParameter(items, "items");
             return new MapViewState.GetCriminalItems(items);
         }
 
         // $FF: synthetic method
-        public static MapViewState.GetCriminalItems copy$default(MapViewState.GetCriminalItems var0, MapPOIItem[] var1, int var2, Object var3) {
+        public static MapViewState.GetCriminalItems copy$default(MapViewState.GetCriminalItems var0, ArrayList<MapPOIItem> var1, int var2, Object var3) {
             if ((var2 & 1) != 0) {
                 var1 = var0.items;
             }
@@ -238,12 +238,12 @@ public abstract class MapViewState implements ViewState {
 
         @NotNull
         public String toString() {
-            return "GetCriminalItems(items=" + Arrays.toString(this.items) + ")";
+            return "GetCriminalItems(items=" + Arrays.toString(new ArrayList[]{this.items}) + ")";
         }
 
         public int hashCode() {
-            MapPOIItem[] var10000 = this.items;
-            return var10000 != null ? Arrays.hashCode(var10000) : 0;
+            ArrayList<MapPOIItem> var10000 = this.items;
+            return var10000 != null ? Arrays.hashCode(new ArrayList[]{var10000}) : 0;
         }
 
         public boolean equals(@Nullable Object var1) {

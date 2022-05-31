@@ -12,6 +12,9 @@ import com.example.version_java.R;
 import com.example.version_java.base.BaseActivity;
 import com.example.version_java.databinding.ActivityHomeBinding;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class HomeActivity extends BaseActivity {
 
     private HomeViewModel homeViewModel;

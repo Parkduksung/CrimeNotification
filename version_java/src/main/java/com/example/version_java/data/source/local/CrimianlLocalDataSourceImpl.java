@@ -1,7 +1,7 @@
 package com.example.version_java.data.source.local;
 
+import android.annotation.SuppressLint;
 import android.os.Build;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -21,6 +21,7 @@ public class CrimianlLocalDataSourceImpl implements CrimianlLocalDataSource {
 
     private final CriminalDao criminalDao;
 
+    @SuppressLint("NewApi")
     @Override
     public void getLocalCriminals(@NonNull Function1 onSuccess, @NonNull Function1 onFailure) {
         try {
