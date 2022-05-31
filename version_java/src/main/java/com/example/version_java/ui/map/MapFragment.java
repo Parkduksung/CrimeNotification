@@ -300,7 +300,6 @@ public class MapFragment extends BaseFragment {
             Intent intent = new Intent(requireContext(), CriminalListActivity.class);
             intent.putExtra("key_range", mapViewModel.settingRoundCriminal);
             startActivity(intent);
-
         } else if (viewState instanceof MapViewState.LogoutUser) {
             /**
              * 로그아웃.

@@ -69,6 +69,7 @@ public class MapViewModel extends BaseViewModel {
      * 주변에 범죄자가 몇명있는지 화면으로 이동.
      */
     public void aroundCriminalList() {
+        finishRenewThread();
         viewStateChanged(MapViewState.RouteAroundCriminalList.INSTANCE);
     }
 
